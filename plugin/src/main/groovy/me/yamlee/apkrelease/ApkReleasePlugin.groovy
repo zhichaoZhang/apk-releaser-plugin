@@ -90,7 +90,11 @@ class ApkReleasePlugin implements Plugin<Project> {
             log.lifecycle "android variant name ---> $variant.name"
             def defaultConfig = project.android.defaultConfig
             variant.outputs.all {
-                String fileName = "${project.name}_v${defaultConfig.versionName}_${variant.name}_build${defaultConfig.versionCode}.apk"
+                String apkPrefix = project.extensions.apkRelease.apkPrefix
+                if(apkPrefix == null || apkPrefix == "") {
+                    apkPrefix = project.name
+                }
+                String fileName = "${apkPrefix}_v${defaultConfig.versionName}_${variant.name}_build${defaultConfig.versionCode}.apk"
                 log.lifecycle("renamed apk file is $fileName")
                 outputFileName = fileName
                 global.apkFilePath = dirName + File.separator + outputFileName

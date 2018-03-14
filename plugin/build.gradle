@@ -1,26 +1,5 @@
-
-//plugins {
-//    id "com.jfrog.bintray" version "1.7"
-//}
-
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath 'org.ajoberstar:gradle-git:1.4.2'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-    }
-
-}
-
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven-publish'
 apply plugin: 'idea'
 apply plugin: 'com.jfrog.bintray'
@@ -37,13 +16,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-version = '0.3.2'
-group = "me.yamlee.apkrelease"
-
-
-// 应用插件
-apply from: '../bintray.gradle'
-
+//version = '0.3.3'
+//group = "me.yamlee.apkrelease"
 //
 //publishing {
 //    publications {
@@ -55,7 +29,7 @@ apply from: '../bintray.gradle'
 //        }
 //    }
 //}
-
+//
 //pluginBundle {
 //    website = 'https://github.com/YamLee/apk-releaser-plugin'
 //    vcsUrl = 'git@github.com:YamLee/apk-releaser-plugin.git'
@@ -69,7 +43,7 @@ apply from: '../bintray.gradle'
 //        }
 //    }
 //}
-
+//
 //uploadArchives {
 //    repositories {
 //        mavenDeployer {
@@ -94,13 +68,70 @@ apply from: '../bintray.gradle'
 //        licenses = ['Apache-2.0']
 //        vcsUrl = 'git@github.com:YamLee/apk-releaser-plugin.git'
 //        version {
-//            name = '0.3.2'
-//            desc = 'Apk Release Plugin 0.3.2'
+//            name = '0.3.3'
+//            desc = 'Apk Release Plugin 0.3.3'
 //            released  = new Date()
-//            vcsTag = '0.3.2'
-//            attributes = ['gradle-plugin': 'me.yamlee:apk-release-plugin:0.3.2']
+//            vcsTag = '0.3.3'
+//            attributes = ['gradle-plugin': 'me.yamlee:apk-release-plugin:0.3.3']
 //        }
 //    }
 //
 //}
+
+def publishLibrary = true
+//./gradlew clean build bintrayUpload -PbintrayUser=joye -PbintrayKey=3408ba56a530f1cd34a1e8f85d993b9e17dd9a0a -PdryRun=false
+if (publishLibrary) {
+    version = "0.3.5"
+    def siteUrl = 'https://github.com/zhichaoZhang'   // 项目的主页
+    def gitUrl = 'https://github.com/zhichaoZhang/apk-releaser-plugin'   // Git仓库的url
+    group = "me.yamlee.apkrelease"            // Maven Group ID for the artifact，一般填你唯一的包名
+    install {
+        repositories.mavenInstaller {
+            // This generates POM.xml with proper parameters
+            pom {
+                project {
+                    packaging 'aar'
+                    // Add your description here
+                    name 'Apk Release Plugin'     //项目的描述 你可以多写一点
+                    url siteUrl
+                    // Set your license
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'joye'        //填写的一些基本信息
+                            name 'joye'
+                            email 'zzcixmy@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection gitUrl
+                        developerConnection gitUrl
+                        url siteUrl
+                    }
+                }
+            }
+        }
+    }
+
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    bintray {
+        user = properties.getProperty("bintray.user")
+        key = properties.getProperty("bintray.apikey")
+        configurations = ['archives']
+        pkg {
+            repo = "maven"
+            name = "apk-release-plugin"    //发布到JCenter上的项目名字
+            websiteUrl = siteUrl
+            vcsUrl = gitUrl
+            licenses = ["Apache-2.0"]
+            publish = true
+        }
+    }
+}
 
