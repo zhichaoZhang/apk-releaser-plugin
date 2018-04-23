@@ -207,11 +207,16 @@ public class ChannelApkGenerator implements ReleaseJob {
         final Path path = Paths.get(zipFilename);
         final URI uri = URI.create("jar:file:" + path.toUri().getPath());
 
-        final Map<String, String> env = new HashMap<>();
-        if (create) {
-            env.put("create", "true");
+        try {
+            return FileSystems.getFileSystem(uri);
+        } catch (FileSystemNotFoundException e) {
+            e.fillInStackTrace();
+            final Map<String, String> env = new HashMap<>();
+            if (create) {
+                env.put("create", "true");
+            }
+            return FileSystems.newFileSystem(uri, env);
         }
-        return FileSystems.newFileSystem(uri, env);
     }
 
 
