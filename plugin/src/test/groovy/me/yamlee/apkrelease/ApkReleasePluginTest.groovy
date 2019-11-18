@@ -1,23 +1,13 @@
 package me.yamlee.apkrelease
 
-import me.yamlee.apkrelease.util.FileCreator
-import org.apache.commons.lang.WordUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 import org.gradle.testfixtures.ProjectBuilder
-import org.hamcrest.Matchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import org.quanqi.pgyer.gradle.plugins.ApkTarget
-import org.quanqi.pgyer.gradle.plugins.PgyerAllUploadTask
-import org.quanqi.pgyer.gradle.plugins.PgyerExtension
-import org.quanqi.pgyer.gradle.plugins.PgyerUserUploadTask
-
-import static org.hamcrest.MatcherAssert.*
-
 
 class ApkReleasePluginTest {
     Project project

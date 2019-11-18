@@ -11,7 +11,7 @@ dependencies {
     compile localGroovy()
     compile 'com.android.tools.build:gradle:3.0.1'
     compile 'org.ajoberstar:gradle-git:1.4.2'
-    compile 'org.quanqi:pgyer:0.1.2'
+    compile 'com.squareup.okhttp:okhttp:2.2.0'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
     testCompile 'junit:junit:4.12'
 }
@@ -81,7 +81,7 @@ dependencies {
 def publishLibrary = true
 //./gradlew clean build bintrayUpload -PbintrayUser=joye -PbintrayKey=3408ba56a530f1cd34a1e8f85d993b9e17dd9a0a -PdryRun=false
 if (publishLibrary) {
-    version = "0.3.7"
+    version = "0.4.6"
     def siteUrl = 'https://github.com/zhichaoZhang'   // 项目的主页
     def gitUrl = 'https://github.com/zhichaoZhang/apk-releaser-plugin'   // Git仓库的url
     group = "me.yamlee.apkrelease"            // Maven Group ID for the artifact，一般填你唯一的包名

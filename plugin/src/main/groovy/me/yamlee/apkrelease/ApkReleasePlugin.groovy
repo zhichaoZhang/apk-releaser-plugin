@@ -10,7 +10,6 @@ import me.yamlee.apkrelease.internel.task.ApkReleaseTask
 import me.yamlee.apkrelease.internel.task.ChannelPackageTask
 import me.yamlee.apkrelease.internel.vcs.GitVcsOperator
 import me.yamlee.apkrelease.internel.vcs.VcsOperator
-import org.apache.commons.lang.WordUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -112,5 +111,4 @@ class ApkReleasePlugin implements Plugin<Project> {
     static def isOfflineBuild(Project project) {
         return project.getGradle().getStartParameter().isOffline()
     }
-
 }

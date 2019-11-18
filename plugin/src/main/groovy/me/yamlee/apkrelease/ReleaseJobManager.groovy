@@ -1,16 +1,23 @@
 package me.yamlee.apkrelease
 
+import com.squareup.okhttp.MediaType
+import com.squareup.okhttp.MultipartBuilder
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.RequestBody
+import com.squareup.okhttp.Response
 import me.yamlee.apkrelease.internel.ApkFileResolver
 import me.yamlee.apkrelease.internel.ReleasePreparer
 import me.yamlee.apkrelease.internel.VcsAutoCommitor
 import me.yamlee.apkrelease.internel.iml.AndroidProxy
 import me.yamlee.apkrelease.internel.vcs.GitVcsOperator
 import me.yamlee.apkrelease.internel.vcs.VcsOperator
-import org.apache.commons.lang.WordUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by yamlee on 7/7/16.
@@ -69,18 +76,8 @@ class ReleaseJobManager {
                 println("$buildFlavorName pgyerApiKey is $pgyerApiKey")
                 LOG.info("$buildFlavorName pgyerUserKey is $pgyerUserKey")
                 println("$buildFlavorName pgyerUserKey is $pgyerUserKey")
-                project.apply plugin: 'org.quanqi.pgyer'
-                project.pgyer {
-                    _api_key = pgyerApiKey
-                    uKey = pgyerUserKey
-                }
-                project.apks {
-                    distribute {
-                        sourceFile = apkFile
-                    }
-                }
-                def uploadTask = project.tasks.findByName("uploadPgyer")
-                uploadTask.execute()
+
+                httpPost(apkFiles, pgyerApiKey, pgyerUserKey)
 
                 //3.Commit msg to version control system
                 if (target.autoCommitToCVS) {
@@ -94,5 +91,45 @@ class ReleaseJobManager {
         }
 
 
+    }
+
+    private static void httpPost(List<File> apks, String apiKey, String userKey) {
+        //蒲公英上传地址
+        String uploadUrl = "https://www.pgyer.com/apiv2/app/upload"
+
+        OkHttpClient client = new OkHttpClient()
+        client.setConnectTimeout(10, TimeUnit.SECONDS)
+        client.setReadTimeout(60, TimeUnit.SECONDS)
+
+        for (File apk in apks) {
+            MultipartBuilder multipartBuilder = new MultipartBuilder()
+                    .type(MultipartBuilder.FORM)
+
+
+            multipartBuilder.addFormDataPart("_api_key", apiKey)
+            multipartBuilder.addFormDataPart("uKey", userKey)
+            multipartBuilder.addFormDataPart("buildInstallType", "2") //密码安装
+            multipartBuilder.addFormDataPart("buildPassword", "123456") //密码固定位123456
+
+
+            multipartBuilder.addFormDataPart("file",
+                    apk.name,
+                    RequestBody.create(
+                            MediaType.parse("application/vnd.android.package-archive"),
+                            apk)
+            )
+
+            Request request = new Request.Builder().url(uploadUrl).
+                    post(multipartBuilder.build()).
+                    build()
+
+            Response response = client.newCall(request).execute()
+
+            InputStream is = response.body().byteStream()
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is))
+            String uploadResult = reader.readLine()
+            println("${apk.name} upload result is:\n ${uploadResult}")
+            is.close()
+        }
     }
 }
