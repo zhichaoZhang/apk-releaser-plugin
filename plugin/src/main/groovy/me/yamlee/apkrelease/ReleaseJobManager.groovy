@@ -62,6 +62,8 @@ class ReleaseJobManager {
             throw new GradleException("Can not upload apk file to pgyer because can not find target apk file")
         }
 
+        apkFiles.clear()
+        apkFiles.add(apkFile)
 
         def items = project.apkRelease.distributeTargets
         LOG.lifecycle("...distribute iterate flavors....")
